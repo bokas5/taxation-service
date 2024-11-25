@@ -8,60 +8,35 @@ If you want to learn more about Quarkus, please visit its website: <https://quar
 
 You can run your application in dev mode that enables live coding using:
 
-```shell script
-./mvnw compile quarkus:dev
-```
+## Assumptions
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
+We are assuming that each country has tax rules set in stone, and we put those rules in the `CountryTaxRules` table.
 
-## Packaging and running the application
+## Endpoints
 
-The application can be packaged using:
+For simplicity, we have two endpoints:
+- `/taxation/general`: Calculates general taxation.
+- `/taxation/winnings`: Calculates winnings taxation.
 
-```shell script
-./mvnw package
-```
+This project uses Swagger to generate API documentation. The Swagger UI is available at:
+http://localhost:8080/q/swagger-ui/
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
+## Database Tables
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
+We have three tables in our database:
+1. `country_tax_rules`: Contains the tax rules for each country.
+2. `trader`: Contains the traders and their respective countries.
+3. `taxation`: Stores the responses from the two endpoints in `TaxationResource`.
 
-If you want to build an _über-jar_, execute the following command:
+### Import Data
 
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
-```
+The `country_tax_rules` and `trader` tables are populated with initial data using the `import.sql` file.
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+- The `trader` table has some users that we can use, and each of those users belongs to a certain country that has different tax rules. Here are the users with `traderId` from 1 to 4:
+    - Trader A (Germany)
+    - Trader B (France)
+    - Trader C (Spain)
+    - Trader D (Italy)
 
-## Creating a native executable
+- The `taxation` table is filled with all the responses from the two endpoints in `TaxationResource`.
 
-You can create a native executable using:
-
-```shell script
-./mvnw package -Dnative
-```
-
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
-
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
-```
-
-You can then execute your native executable with: `./target/taxation-service-1.0.0-SNAPSHOT-runner`
-
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
-
-## Related Guides
-
-- REST JAXB ([guide](https://quarkus.io/guides/resteasy-reactive#xml-serialisation)): JAXB serialization support for Quarkus REST. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it.
-- JDBC Driver - PostgreSQL ([guide](https://quarkus.io/guides/datasource)): Connect to the PostgreSQL database via JDBC
-
-## Provided Code
-
-### REST
-
-Easily start your REST Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)

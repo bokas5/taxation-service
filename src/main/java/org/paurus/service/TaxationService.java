@@ -4,9 +4,11 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.paurus.jpa.CountryTaxRulesJpa;
+import org.paurus.jpa.TaxationJpa;
 import org.paurus.models.TaxationRequest;
 import org.paurus.models.TaxationResponse;
 import org.paurus.repository.CountryTaxRulesRepository;
+import org.paurus.repository.TaxationRepository;
 import org.paurus.repository.TraderRepository;
 
 @ApplicationScoped
@@ -18,16 +20,23 @@ public class TaxationService {
     @Inject
     CountryTaxRulesRepository countryTaxRulesRepository;
 
+    @Inject
+    TaxationRepository taxationRepository;
+
     @Transactional
     public TaxationResponse calculateGeneralTaxation(TaxationRequest taxationRequest) {
         CountryTaxRulesJpa taxRules = getCountryTaxRulesForTrader(taxationRequest.traderId());
-        return calculateTaxation(taxationRequest, taxRules, false);
+        TaxationResponse response = calculateTaxation(taxationRequest, taxRules, false);
+        persistTaxation(taxationRequest, response);
+        return response;
     }
 
     @Transactional
     public TaxationResponse calculateWinningsTaxation(TaxationRequest taxationRequest) {
         CountryTaxRulesJpa taxRules = getCountryTaxRulesForTrader(taxationRequest.traderId());
-        return calculateTaxation(taxationRequest, taxRules, true);
+        TaxationResponse response = calculateTaxation(taxationRequest, taxRules, true);
+        persistTaxation(taxationRequest, response);
+        return response;
     }
 
     private CountryTaxRulesJpa getCountryTaxRulesForTrader(Long traderId) {
@@ -66,5 +75,18 @@ public class TaxationService {
                 taxRules.getTaxRate(),
                 taxAmount
         );
+    }
+
+    private void persistTaxation(TaxationRequest request, TaxationResponse response) {
+        TaxationJpa taxationJpa = new TaxationJpa();
+        taxationJpa.setTraderId(request.traderId());
+        taxationJpa.setPlayedAmount(request.playedAmount());
+        taxationJpa.setOdd(request.odd());
+        taxationJpa.setPossibleReturnAmount(response.possibleReturnAmount());
+        taxationJpa.setPossibleReturnAmountBefTax(response.possibleReturnAmountBefTax());
+        taxationJpa.setPossibleReturnAmountAfterTax(response.possibleReturnAmountAfterTax());
+        taxationJpa.setTaxRate(response.taxRate());
+        taxationJpa.setTaxAmount(response.taxAmount());
+        taxationRepository.persist(taxationJpa);
     }
 }
