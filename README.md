@@ -4,6 +4,7 @@ This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
 
+
 ## Running the application in dev mode
 
 You can run your application in dev mode that enables live coding using:
@@ -40,3 +41,9 @@ The `country_tax_rules` and `trader` tables are populated with initial data usin
 
 - The `taxation` table is filled with all the responses from the two endpoints in `TaxationResource`.
 
+## Running the application in dev mode
+
+You can run your application in dev mode that enables live coding using:
+
+```shell script
+./mvnw compile quarkus:dev
