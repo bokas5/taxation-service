@@ -4,11 +4,6 @@ This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
 If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
 
-
-## Running the application in dev mode
-
-You can run your application in dev mode that enables live coding using:
-
 ## Assumptions
 
 We are assuming that each country has tax rules set in stone, and we put those rules in the `CountryTaxRules` table.
@@ -41,9 +36,63 @@ The `country_tax_rules` and `trader` tables are populated with initial data usin
 
 - The `taxation` table is filled with all the responses from the two endpoints in `TaxationResource`.
 
-## Running the application in dev mode
+## Running the Application in Development Mode
 
-You can run your application in dev mode that enables live coding using:
+You can run your application in development mode with live coding enabled using the following command:
+```bash
+./mvnw quarkus:dev
+```
 
-```shell script
-./mvnw compile quarkus:dev
+### Available Endpoints
+The project provides two REST API endpoints for processing files and retrieving timestamps. Below are the details:
+
+### 1. Calculate General Taxation
+
+![Application Screenshot](general.png)
+
+HTTP Method: POST
+URL:  /taxation/general
+
+Description: Calculates general taxation for the request.
+
+Example Request:
+```bash
+curl -X POST "http://localhost:8080/taxation/general" -H "Content-Type: application/json" -d '{"traderId": 1, "playedAmount": 7.5, "odd": 1.0}'
+```
+
+Example Response:
+Success (200 OK):
+
+`{
+    "possibleReturnAmount": 6.75,
+    "possibleReturnAmountAfterTax": 6.75,
+    "possibleReturnAmountBefTax": 7.5,
+    "taxAmount": 0.75,
+    "taxRate": 10.0
+}
+`
+
+### 2. Calculate Winnings Taxation
+
+![Application Screenshot](winnings.png)
+
+HTTP Method: GET
+URL:  /taxation/winnings
+
+Description: Calculates winnings taxation for the request.
+
+Example Request:
+```bash
+curl -X POST "http://localhost:8080/taxation/winnings" -H "Content-Type: application/json" -d '{"traderId": 1, "playedAmount": 7.5, "odd": 1.0}'
+```
+
+Example Response:
+Success (200 OK):
+
+`{
+    "possibleReturnAmount": 7.5,
+    "possibleReturnAmountAfterTax": 7.5,
+    "possibleReturnAmountBefTax": 7.5,
+    "taxAmount": 0.0,
+    "taxRate": 10.0
+}`
